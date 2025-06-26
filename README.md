@@ -11,6 +11,8 @@
 axum + Rust , example
 
 ***
+* csr1: CSR  example
+* react1: React fullstack
 * routes : route example
 * sqlite4: SQLite example
 
