@@ -18,6 +18,8 @@ npm run dev
 ```
 
 ***
-### setup
+### blog
+
+https://zenn.dev/knaka0209/scraps/78768f24ab0b4c
 
 ***
