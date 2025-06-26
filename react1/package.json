@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "npm run build && cargo run",
-    "build": "npx esbuild --bundle ./src/client.tsx --minify --outfile=./public/client.js",
+    "build": "npx esbuild --bundle ./src/client.tsx --minify --outfile=./public/static/client.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
