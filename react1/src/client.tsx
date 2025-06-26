@@ -4,7 +4,7 @@ import React from 'react'
 function App() {
   return (
   <div>
-    <h1>Hello</h1>
+    <h1 className="text-3xl font-bold">Hello</h1>
     <hr />
     <span>welcome , Rust axum +  React</span>
   </div>
