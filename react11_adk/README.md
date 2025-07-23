@@ -26,5 +26,6 @@ cargo run
 ***
 ### blog
 
+https://zenn.dev/link/comments/b8d45532d0f819
 
 ***
