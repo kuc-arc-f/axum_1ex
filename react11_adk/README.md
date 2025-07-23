@@ -19,7 +19,7 @@ Google ADK , axum Rust + React
 * start
 
 ```
-npm run dev
+npm run build
 cargo run
 ```
 
