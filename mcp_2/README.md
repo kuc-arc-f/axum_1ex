@@ -30,4 +30,16 @@ cargo run  --release
 TURSO_DATABASE_URL=""
 TURSO_AUTH_TOKEN=
 ```
+
+***
+* settings.json : GEMINI-CLI
+```
+"myRemoteServer": {
+  "httpUrl": "http://localhost:3000/mcp", 
+  "headers": {
+    "Authorization": "" 
+  },
+  "timeout": 5000 
+}  
+```
 ***
