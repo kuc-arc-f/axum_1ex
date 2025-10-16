@@ -42,4 +42,10 @@ TURSO_AUTH_TOKEN=
   "timeout": 5000 
 }  
 ```
+
+***
+* test-code: http
+
+https://gist.github.com/kuc-arc-f/66c6ac29fe229e4ba495acb1ca14f196
+
 ***
