@@ -132,7 +132,7 @@ async fn handle_jsonrpc(
         
         tracing::info!("ok, auth-key");
     }
-        
+
     // JSON-RPC 2.0 バージョンチェック
     if request.jsonrpc != "2.0" {
         return (
@@ -260,7 +260,17 @@ fn handle_tools_list() -> Result<Value, JsonRpcError> {
                     },
                     "required": ["name", "price"]
                 }
-            }            
+            },            
+            {
+                "name": "purchase_list",
+                "description": "購入品リストを、表示します。",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                }
+            },            
+
         ]
     }))
 }
@@ -325,7 +335,25 @@ async fn handle_tools_call(state: Arc<AppState>, params: Option<Value>) -> Resul
                     }
                 ]
             }))
-        }        
+        },
+        "purchase_list" => {
+            let result_text = mod_purchase::purchase_list_handler().await;
+            if result_text == "" {
+             return Err(JsonRpcError {
+                    code: -32603,
+                    message: "Internal error".to_string(),
+                    data: None,
+                })   
+            }
+            Ok(json!({
+                "content": [
+                    {
+                        "type": "text",
+                        "text": format!("{}", result_text),
+                    }
+                ]
+            }))
+        },                
         "add_todo" => {
             let title = arguments["title"].as_str().ok_or(JsonRpcError {
                 code: -32602,

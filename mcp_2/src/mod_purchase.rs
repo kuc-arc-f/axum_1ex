@@ -74,6 +74,47 @@ pub async fn purchase_handler(
 
     let result_str = purchase(name, price);
 
-    //Ok(result_str.to_string())
     result_str.to_string()
 }
+
+/**
+*
+* @param
+*
+* @return
+*/
+pub async fn purchase_list_handler() -> String 
+{
+    let url = env::var("TURSO_DATABASE_URL").expect("TURSO_DATABASE_URL must be set");
+    let token = env::var("TURSO_AUTH_TOKEN").expect("TURSO_AUTH_TOKEN must be set");
+    tracing::info!("TURSO_DATABASE_URL={}", url);
+    let db = Builder::new_remote(url, token).build().await.unwrap();
+    let conn = db.connect().unwrap();  
+
+    let order_sql = "ORDER BY created_at DESC LIMIT 5;";
+    let sql = format!("SELECT id, data ,created_at, updated_at 
+    FROM item_price
+    {}
+    "
+    , order_sql
+    );
+    println!("sql={}", sql);
+    let mut rows = conn.query(&sql,
+        (),  // 引数なし
+    ).await.unwrap();
+    let mut todos: Vec<Item> = Vec::new();
+    while let Some(row) = rows.next().await.unwrap() {
+        let id: i64 = row.get(0).unwrap();
+        let data: String = row.get(1).unwrap();
+        todos.push(Item {
+            id: id,
+            data: data,
+            created_at: row.get(2).unwrap(),
+            updated_at: row.get(3).unwrap(),        
+        });        
+    }
+    let json_string_variable = serde_json::to_string(&todos).expect("JSON convert error");
+    //println!("変換されたJSON文字列: {}", json_string_variable);
+    return json_string_variable.to_string();    
+}
+
