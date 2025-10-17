@@ -1,6 +1,6 @@
 use axum::{
     extract::State,
-    http::StatusCode,
+    http::{HeaderMap, StatusCode},
     response::IntoResponse,
     routing::post,
     Json, Router,
@@ -9,6 +9,7 @@ use dotenvy::dotenv;
 use libsql::Builder;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use std::env;
 use std::sync::Arc;
 use tower_http::trace::TraceLayer;
 
@@ -93,39 +94,45 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-/*
-fn valid_authkey(headers: HeaderMap, sendkey: &str) -> bool {
-    if let Some(auth) = headers.get("Authorization") {
-        let value = auth.to_str().unwrap_or("");
-        tracing::info!("auth={}", value);
-        if value == sendkey {
-            tracing::info!("ok, auth-key");
-            return true;
-        } else {
-            tracing::info!("NG, auth-key");
-            return false;
-        }        
-    } else {
-        return false;
-    }
-}
-*/
 // JSON-RPC ハンドラー
 async fn handle_jsonrpc(
     State(state): State<Arc<AppState>>,
+    headers: HeaderMap,
     Json(request): Json<JsonRpcRequest>,
 ) -> impl IntoResponse 
 {
     tracing::info!("Received request: method={}, id={:?}", request.method, request.id);
-    /*
-    let api_key = env::var("API_KEY").expect("API_KEY must be set");
-    let valid = valid_authkey(headers, &api_key);
-    if valid == false {
-        tracing::info!("NG , authkey");
-        return Err("error, Authorization".to_string());
-    }    
-    */
 
+    // Authorization ヘッダーの検証
+    let api_key = env::var("API_KEY").unwrap_or_else(|_| String::new());
+    
+    if !api_key.is_empty() {
+        let auth_header = headers.get("Authorization")
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("");
+        
+        tracing::info!("auth={}", auth_header);
+        
+        if auth_header != api_key {
+            tracing::info!("NG, auth-key");
+            return (
+                StatusCode::UNAUTHORIZED,
+                Json(JsonRpcResponse {
+                    jsonrpc: "2.0".to_string(),
+                    result: None,
+                    error: Some(JsonRpcError {
+                        code: -32001,
+                        message: "Unauthorized: Invalid API key".to_string(),
+                        data: None,
+                    }),
+                    id: request.id,
+                }),
+            );
+        }
+        
+        tracing::info!("ok, auth-key");
+    }
+        
     // JSON-RPC 2.0 バージョンチェック
     if request.jsonrpc != "2.0" {
         return (
