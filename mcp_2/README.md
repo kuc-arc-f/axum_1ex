@@ -25,8 +25,10 @@ cargo run  --release
 ### setup
 
 * .env
+* API_KEY: Authorization key set
 
 ```
+API_KEY="123"
 TURSO_DATABASE_URL=""
 TURSO_AUTH_TOKEN=
 ```
